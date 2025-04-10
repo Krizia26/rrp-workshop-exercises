@@ -14,9 +14,15 @@ FASTQ_R1="${RUN_ID}_1.fastq.gz"
 FASTQ_R2="${RUN_ID}_2.fastq.gz"
 FASTQ_URL="ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR115/089/${RUN_ID}"
 FASTQ_DEST="../data/raw/fastq/${STUDY_ID}"
+TRIMMED_DIR= "../data/trimmed/${STUDY_ID}"
+REPORTS_DIR="../reports/fastp"
 
 #create directory to hold the FASTQ files from this project 
-mkdir -p $FASTQ_DEST
+mkdir -p $FASTQ_DEST 
+mkdir -p $TRIMMED_DIR 
+mkdir -p $REPORTS_DIR
+
+if [ ! -f "${FASTQ_DEST}/${FASTQ_R1}" ]; then
 
 # Download the R1 file
 
@@ -24,18 +30,27 @@ curl -O $FASTQ_URL/$FASTQ_R1
 #Move file to destination directory
 mv $FASTQ_R1 $FASTQ_DEST
 
+fi
+
 #Count the lines in the R2 file
+echo "the numnber of lines in the $FASTQ_R2 is:"
 
-
-# Print an indicator:
-echo "the numnber of lines in the $FASTQ_R1 is:"
-
+if [ ! -f "${FASTQ_DEST}/${FASTQ_R2}" ]; then
 # Curl the file (using one of several approaches)
 curl -O $FASTQ_URL/$FASTQ_R2 # this approach preserves the original internet file name
 
 # Move the file to its destination directory
 mv $FASTQ_R2 $FASTQ_DEST
 
+fi
+
 # Explore: how many lines are in the file?
 echo "The number of lines in $FASTQ_R2 is:"
 gunzip -c $FASTQ_DEST/$FASTQ_R2 | wc -l
+
+fastp \
+    --in1 $FASTQ_DEST/$FASTQ_R1 \
+    --in2 $FASTQ_DEST/$FASTQ_R2 \
+    --out1 $TRIMMED_DIR/$FASTQ_R1 \
+    --out2 $TRIMMED_DIR/$FASTQ_R2 \
+    --html "$REPORTS_DIR/${STUDY_ID}_report.html"
