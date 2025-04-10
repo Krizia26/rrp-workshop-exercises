@@ -17,24 +17,28 @@ FASTQ_DEST="../data/raw/fastq/${STUDY_ID}"
 
 #create directory to hold the FASTQ files from this project 
 mkdir -p $FASTQ_DEST
+if ! [ -e "${FASTQ_DEST}/${FASTQ_R1}" ]; then 
 
 # Download the R1 file
 
 curl -O $FASTQ_URL/$FASTQ_R1
+
 #Move file to destination directory
 mv $FASTQ_R1 $FASTQ_DEST
 
+fi 
 #Count the lines in the R2 file
-
-
-# Print an indicator:
 echo "the numnber of lines in the $FASTQ_R1 is:"
+
+if ! [ -e "${FASTQ_DEST}/${FASTQ_R1}" ]; then 
 
 # Curl the file (using one of several approaches)
 curl -O $FASTQ_URL/$FASTQ_R2 # this approach preserves the original internet file name
 
 # Move the file to its destination directory
 mv $FASTQ_R2 $FASTQ_DEST
+
+fi 
 
 # Explore: how many lines are in the file?
 echo "The number of lines in $FASTQ_R2 is:"
